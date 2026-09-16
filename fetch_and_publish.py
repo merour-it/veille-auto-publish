@@ -67,15 +67,82 @@ from datetime import date, datetime, timedelta, timezone
 from urllib.parse import quote, urlparse
 
 ALLOWED_CATEGORIES = {
-    "reseau_securite": ("📡", "Réseau & sécurité périmétrique"),
-    "systemes": ("💻", "Systèmes d'exploitation"),
-    "cloud_m365": ("☁️", "Cloud & M365"),
-    "securite_endpoint": ("🛡️", "Sécurité endpoint"),
-    "sauvegarde": ("💾", "Sauvegarde"),
-    "gestion_parc": ("🔧", "Gestion de parc"),
+    "reseau_securite": ("📡", "Pare-feu, routeurs & réseau (Fortinet, pfSense, Unifi)"),
+    "systemes": ("💻", "Systèmes d'exploitation (Windows, macOS)"),
+    "cloud_m365": ("☁️", "Cloud & Microsoft 365"),
+    "securite_endpoint": ("🛡️", "Sécurité endpoint (ThreatDown)"),
+    "sauvegarde": ("💾", "Sauvegarde (Veeam, Tri-Backup)"),
+    "gestion_parc": ("🔧", "Gestion de parc (NinjaOne)"),
+    "navigateurs": ("🌐", "Navigateurs (Chrome, Safari, Firefox)"),
+    "stockage_nas": ("🗄️", "Stockage & NAS (Synology)"),
+    "transfert_fichiers": ("📁", "Transfert de fichiers (FileZilla, Rumpus)"),
+    "acces_distant": ("🖥️", "Accès à distance (TeamViewer, AnyDesk)"),
+    "mot_de_passe": ("🔑", "Gestionnaire de mots de passe (1Password)"),
     "autres_outils": ("📦", "Autres outils"),
+    "hors_perimetre": ("📰", "Autres actualités (hors périmètre)"),
 }
-CATEGORY_ORDER = list(ALLOWED_CATEGORIES.keys())
+# Ordre d'affichage des sections "dans le périmètre" — hors_perimetre n'y
+# figure jamais : cette section est toujours rendue à part, repliée, en tout
+# dernier (voir build_html).
+CATEGORY_ORDER = [c for c in ALLOWED_CATEGORIES if c != "hors_perimetre"]
+
+# ─────────────────────────────────────────────────────────────────────────
+# Reclassification par produit réellement utilisé chez PMIT (liste confirmée
+# par Pierre le 16/09/2026). La catégorie envoyée par la tâche Cowork dans le
+# JSON n'est qu'indicative : c'est CE mapping, déterministe et basé sur le nom
+# du produit, qui décide de la catégorie finale affichée — un article sur un
+# outil non listé ici part automatiquement dans "hors_perimetre", quelle que
+# soit la catégorie d'origine. Prembattu keyword gagne (ordre de la liste).
+# ─────────────────────────────────────────────────────────────────────────
+IN_SCOPE_VENDOR_KEYWORDS: list[tuple[str, str]] = [
+    # Pare-feu / routeur / switch
+    ("fortianalyzer", "reseau_securite"), ("fortimanager", "reseau_securite"),
+    ("fortiproxy", "reseau_securite"), ("fortisiem", "reseau_securite"),
+    ("fortisoar", "reseau_securite"), ("fortisandbox", "reseau_securite"),
+    ("fortipam", "reseau_securite"), ("fortiswitch", "reseau_securite"),
+    ("forticlient", "reseau_securite"), ("fortigate", "reseau_securite"),
+    ("fortios", "reseau_securite"), ("fortinet", "reseau_securite"),
+    ("pfsense", "reseau_securite"), ("netgate", "reseau_securite"),
+    ("unifi", "reseau_securite"), ("ubiquiti", "reseau_securite"),
+    # Systèmes d'exploitation
+    ("windows server", "systemes"), ("windows", "systemes"),
+    ("macos", "systemes"), ("mac os", "systemes"), ("os x", "systemes"),
+    ("catalina", "systemes"), ("mojave", "systemes"), ("big sur", "systemes"),
+    ("monterey", "systemes"), ("ventura", "systemes"), ("sonoma", "systemes"),
+    ("sequoia", "systemes"), ("tahoe", "systemes"),
+    # Cloud & Microsoft 365
+    ("microsoft 365", "cloud_m365"), ("m365", "cloud_m365"), ("office 365", "cloud_m365"),
+    ("suite office", "cloud_m365"), ("entra id", "cloud_m365"), ("azure ad", "cloud_m365"),
+    ("azure", "cloud_m365"), ("exchange online", "cloud_m365"), ("outlook", "cloud_m365"),
+    ("sharepoint", "cloud_m365"), ("onedrive", "cloud_m365"), ("microsoft teams", "cloud_m365"),
+    # Sécurité endpoint
+    ("threatdown", "securite_endpoint"), ("malwarebytes", "securite_endpoint"),
+    # Sauvegarde
+    ("veeam", "sauvegarde"), ("tri-backup", "sauvegarde"), ("tribackup", "sauvegarde"),
+    # Gestion de parc
+    ("ninjaone", "gestion_parc"),
+    # Navigateurs
+    ("chrome", "navigateurs"), ("safari", "navigateurs"), ("firefox", "navigateurs"),
+    # Stockage / NAS
+    ("synology", "stockage_nas"),
+    # Transfert de fichiers
+    ("filezilla", "transfert_fichiers"), ("rumpus", "transfert_fichiers"),
+    # Accès à distance
+    ("teamviewer", "acces_distant"), ("anydesk", "acces_distant"),
+    # Gestionnaire de mots de passe
+    ("1password", "mot_de_passe"),
+]
+
+
+def classify_category(product: str) -> str:
+    """Détermine la catégorie finale d'affichage à partir du nom du produit,
+    indépendamment de la catégorie fournie par la tâche Cowork. Renvoie
+    "hors_perimetre" si aucun outil connu du parc PMIT n'est reconnu."""
+    p = product.lower()
+    for keyword, category in IN_SCOPE_VENDOR_KEYWORDS:
+        if keyword in p:
+            return category
+    return "hors_perimetre"
 
 ALLOWED_CRITICALITY = {
     "critique": ("🔴", "#dc2626"),
@@ -335,78 +402,98 @@ def build_sidebar(week_dates: list[date], active_date: date, location: str) -> s
 </aside>'''
 
 
-def build_html(page_date: str, items: list[dict], sidebar_html: str) -> str:
-    counts = {c: 0 for c in CRITICALITY_ORDER}
-    for item in items:
-        counts[item["criticality"]] += 1
-
-    by_category: dict[str, dict[str, list[dict]]] = {c: {} for c in CATEGORY_ORDER}
-    for item in items:
-        by_category[item["category"]].setdefault(item["product"], []).append(item)
-
-    # Liste des sources consultées, dérivée des items réellement présents ce
-    # jour-là (dédupliquée par nom de source, première URL rencontrée
-    # conservée) — pas de liste statique : uniquement ce qui a vraiment servi.
-    seen_sources: dict[str, str] = {}
-    for item in items:
-        if item["source"] and item["source"] not in seen_sources:
-            seen_sources[item["source"]] = item["url"]
-
-    def esc(value: str) -> str:
-        return html_lib.escape(value, quote=True)
-
-    sections_html = []
-    for cat_key in CATEGORY_ORDER:
-        products = by_category[cat_key]
-        if not products:
-            continue
-        icon, label = ALLOWED_CATEGORIES[cat_key]
-
-        subgroups_html = []
-        for product_name, product_items in products.items():
-            cards_html = []
-            for item in sorted(
-                product_items, key=lambda i: CRITICALITY_ORDER.index(i["criticality"])
-            ):
-                crit_class = CRIT_CSS_CLASS[item["criticality"]]
-                crit_icon, _ = ALLOWED_CRITICALITY[item["criticality"]]
-                crit_label = CRIT_BADGE_LABEL[item["criticality"]]
-                tech_detail_html = (
-                    f'''<div class="level2">
+def _render_cards(product_items: list[dict], esc) -> str:
+    cards_html = []
+    for item in sorted(product_items, key=lambda i: CRITICALITY_ORDER.index(i["criticality"])):
+        crit_class = CRIT_CSS_CLASS[item["criticality"]]
+        crit_icon, _ = ALLOWED_CRITICALITY[item["criticality"]]
+        crit_label = CRIT_BADGE_LABEL[item["criticality"]]
+        tech_detail_html = (
+            f'''<div class="level2">
       <div class="level2-label">Détail technique</div>
       <div class="meta">{esc(item["source"])} · {esc(item["date"])}</div>
       <p class="tech">{esc(item["technical_detail"])}</p>
     </div>'''
-                    if item["technical_detail"]
-                    else f'''<div class="level2">
+            if item["technical_detail"]
+            else f'''<div class="level2">
       <div class="meta">{esc(item["source"])} · {esc(item["date"])}</div>
     </div>'''
-                )
-                cards_html.append(
-                    f'''<a class="card {crit_class}" href="{esc(item["url"])}" target="_blank" rel="noopener noreferrer">
+        )
+        cards_html.append(
+            f'''<a class="card {crit_class}" href="{esc(item["url"])}" target="_blank" rel="noopener noreferrer">
     <div class="card-top">
       <span class="badge {crit_class}">{crit_icon} {crit_label}</span>
     </div>
     <div class="level1">{esc(item["impact"])}</div>
     {tech_detail_html}
   </a>'''
-                )
-            subgroups_html.append(
-                f'''<div class="subgroup">
+        )
+    return "".join(cards_html)
+
+
+def _render_product_groups(items: list[dict], esc) -> str:
+    """Regroupe une liste d'items par produit et rend les sous-groupes +
+    cartes correspondants (réutilisé pour les sections du périmètre et pour
+    le bloc "hors périmètre")."""
+    products: dict[str, list[dict]] = {}
+    for item in items:
+        products.setdefault(item["product"], []).append(item)
+    subgroups_html = []
+    for product_name, product_items in products.items():
+        subgroups_html.append(
+            f'''<div class="subgroup">
     <div class="subgroup-title">→ {esc(product_name)}</div>
     <div class="cards">
-      {"".join(cards_html)}
+      {_render_cards(product_items, esc)}
     </div>
   </div>'''
-            )
+        )
+    return "".join(subgroups_html)
 
+
+def build_html(page_date: str, items: list[dict], sidebar_html: str) -> str:
+    def esc(value: str) -> str:
+        return html_lib.escape(value, quote=True)
+
+    # Reclassification déterministe par produit réellement utilisé chez PMIT
+    # — la catégorie d'origine du JSON n'est qu'indicative (voir
+    # classify_category). Un item non reconnu part en "hors_perimetre".
+    items = [dict(item, category=classify_category(item["product"])) for item in items]
+
+    in_scope_items = [i for i in items if i["category"] != "hors_perimetre"]
+    out_of_scope_items = [i for i in items if i["category"] == "hors_perimetre"]
+
+    # Les compteurs en tête de page ne reflètent que ce qui concerne
+    # vraiment le parc PMIT — pas le "hors périmètre" replié plus bas.
+    counts = {c: 0 for c in CRITICALITY_ORDER}
+    for item in in_scope_items:
+        counts[item["criticality"]] += 1
+
+    by_category: dict[str, list[dict]] = {c: [] for c in CATEGORY_ORDER}
+    for item in in_scope_items:
+        by_category[item["category"]].append(item)
+
+    # Liste des sources consultées, dérivée de TOUS les items réellement
+    # présents ce jour-là (périmètre + hors périmètre), dédupliquée par nom
+    # de source — pas une liste statique, uniquement ce qui a vraiment servi.
+    seen_sources: dict[str, str] = {}
+    for item in items:
+        if item["source"] and item["source"] not in seen_sources:
+            seen_sources[item["source"]] = item["url"]
+
+    sections_html = []
+    for cat_key in CATEGORY_ORDER:
+        cat_items = by_category[cat_key]
+        if not cat_items:
+            continue
+        icon, label = ALLOWED_CATEGORIES[cat_key]
         sections_html.append(
             f'''<section class="category">
   <div class="cat-head">
     <span class="cat-icon">{icon}</span>
     <h2>{esc(label)}</h2>
   </div>
-  {"".join(subgroups_html)}
+  {_render_product_groups(cat_items, esc)}
 </section>'''
         )
 
@@ -415,6 +502,20 @@ def build_html(page_date: str, items: list[dict], sidebar_html: str) -> str:
         if sections_html
         else '<p class="empty">Aucune actualité critique aujourd\'hui dans ton périmètre.</p>'
     )
+
+    out_of_scope_html = ""
+    if out_of_scope_items:
+        icon, label = ALLOWED_CATEGORIES["hors_perimetre"]
+        out_of_scope_html = f'''<details class="out-of-scope">
+  <summary>
+    <span class="cat-icon">{icon}</span>
+    <span class="oos-label">{esc(label)}</span>
+    <span class="oos-count">{len(out_of_scope_items)}</span>
+  </summary>
+  <div class="oos-body">
+    {_render_product_groups(out_of_scope_items, esc)}
+  </div>
+</details>'''
 
     sources_html = "".join(
         f'<a href="{esc(url)}" target="_blank" rel="noopener noreferrer">{esc(name)}</a>'
@@ -627,6 +728,42 @@ def build_html(page_date: str, items: list[dict], sidebar_html: str) -> str:
   }}
   .tech {{ margin: 0; font-size: .85rem; color: var(--text-muted); line-height: 1.5; }}
   .empty {{ color: var(--text-muted); font-style: italic; }}
+  details.out-of-scope {{
+    margin: 40px 0 8px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+  }}
+  details.out-of-scope summary {{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    list-style: none;
+    color: var(--text-faint);
+    user-select: none;
+  }}
+  details.out-of-scope summary::-webkit-details-marker {{ display: none; }}
+  details.out-of-scope summary::before {{
+    content: "▸";
+    font-size: .8rem;
+    transition: transform .12s ease;
+  }}
+  details.out-of-scope[open] summary::before {{ transform: rotate(90deg); }}
+  details.out-of-scope .oos-label {{
+    font-size: .85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+  }}
+  details.out-of-scope .oos-count {{
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .75rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 1px 8px;
+  }}
+  details.out-of-scope .oos-body {{ margin-top: 20px; opacity: .85; }}
   footer {{ margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); }}
   .sources {{ display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }}
   .sources-label {{
@@ -675,6 +812,7 @@ def build_html(page_date: str, items: list[dict], sidebar_html: str) -> str:
 </header>
 <div class="content">
 {body_content}
+{out_of_scope_html}
 {footer_html}
 </div>
 </div>
