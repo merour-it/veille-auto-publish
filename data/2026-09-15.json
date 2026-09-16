@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "date_key": "2026-09-15",
+  "page_date": "15 septembre 2026",
+  "items": [
+    {
+      "category": "autres_outils",
+      "product": "Chrome / Microsoft Edge (V8)",
+      "criticality": "critique",
+      "impact": "Le zero-day Chrome V8 signalé la veille s'étend officiellement à Microsoft Edge, désormais attribué à deux groupes liés à la Chine (GRIMWEDGE, LONGTALE) ciblant des ONG — à vérifier que Chrome et Edge sont à jour sur le parc.",
+      "technical_detail": "CVE-2026-87491, extension confirmée à Edge le 14/09.",
+      "source": "CERT-FR AVI-1171",
+      "date": "2026-09-14",
+      "url": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-1171/"
+    },
+    {
+      "category": "reseau_securite",
+      "product": "Cisco Secure Email Gateway",
+      "criticality": "critique",
+      "impact": "Une faille critique distincte touche Cisco Secure Email Gateway, activement exploitée (hors parc de l'entreprise, signalé par prudence).",
+      "technical_detail": "CVSS 9.8, ajoutée au catalogue CISA KEV le 14/09.",
+      "source": "CISA KEV",
+      "date": "2026-09-14",
+      "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    }
+  ]
+}
