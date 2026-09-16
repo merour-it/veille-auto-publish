@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "date_key": "2026-09-14",
+  "page_date": "14 septembre 2026",
+  "items": [
+    {
+      "category": "autres_outils",
+      "product": "Google Chrome (V8)",
+      "criticality": "critique",
+      "impact": "Un second zero-day Chrome (V8) exploité activement : une page web piégée peut permettre à un pirate d'exécuter du code sur les postes utilisant Chrome.",
+      "technical_detail": "CVE-2026-87491, exploitation confirmée. Corrigé en Chrome 153.0.8010.36/.37.",
+      "source": "The Hacker News",
+      "date": "2026-09-09",
+      "url": "https://thehackernews.com/2026/09/chrome-v8-zero-day-exploited-in-wild.html"
+    },
+    {
+      "category": "reseau_securite",
+      "product": "Fortinet FortiOS",
+      "criticality": "critique",
+      "impact": "Des pirates prennent déjà le contrôle à distance de nos pare-feu Fortinet pour s'y maintenir discrètement.",
+      "technical_detail": "RAT PivotC2. CVE-2025-25249, CVSS 7.3, FortiOS 6.4-7.6. À vérifier : version FortiOS déployée.",
+      "source": "The Hacker News / CISA KEV",
+      "date": "2026-09-09",
+      "url": "https://thehackernews.com/2026/09/cisa-flags-exploited-cisco-citrix.html"
+    },
+    {
+      "category": "reseau_securite",
+      "product": "SonicWall SMA",
+      "criticality": "critique",
+      "impact": "Des pirates prennent le contrôle à distance de boîtiers d'accès VPN SonicWall, sans mot de passe.",
+      "technical_detail": "CVE-2026-83548 (CVSS 10.0, SSRF) et CVE-2026-83549 (RCE), modèles 6210/7210/8200v.",
+      "source": "Rapid7",
+      "date": "2026-09-02",
+      "url": "https://www.rapid7.com/blog/post/etr-critical-sonicwall-sma1000-vulnerabilities-cve-2026-83548-cve-2026-83549-exploited-in-the-wild/"
+    },
+    {
+      "category": "reseau_securite",
+      "product": "Cisco Secure Firewall Management Center",
+      "criticality": "critique",
+      "impact": "Des groupes soutenus par des États et des rançongiciels prennent le contrôle de consoles Cisco de gestion de pare-feu.",
+      "technical_detail": "CVE-2026-20079 (CVSS 10.0) et CVE-2026-20316.",
+      "source": "Cisco Talos",
+      "date": "2026-09-10",
+      "url": "https://blog.talosintelligence.com/fmc-ongoing-exploitation/"
+    },
+    {
+      "category": "reseau_securite",
+      "product": "Citrix NetScaler",
+      "criticality": "critique",
+      "impact": "Des pirates contournent déjà l'authentification sur les passerelles Citrix NetScaler.",
+      "technical_detail": "CVE-2026-19490, CVSS 9.3. Échéance fédérale US de correction : 12 sept. 2026.",
+      "source": "Rapid7",
+      "date": "2026-09-10",
+      "url": "https://www.rapid7.com/blog/post/etr-cve-2026-19490-critical-vulnerability-affecting-citrix-netscaler-adc-and-netscaler-gateway/"
+    },
+    {
+      "category": "autres_outils",
+      "product": "GitLab",
+      "criticality": "critique",
+      "impact": "Une faille GitLab permet de lire n'importe quel fichier du serveur sans être connecté ; tentatives d'exploitation dès le 11 septembre.",
+      "technical_detail": "CVE-2026-85706, CVSS 10.0, path traversal API commits. Versions affectées : CE/EE 18.7 (<19.1.8), 19.2 (<19.2.6), 19.3 (<19.3.2).",
+      "source": "The Hacker News",
+      "date": "2026-09-11",
+      "url": "https://thehackernews.com/2026/09/gitlab-cvss-10-file-read-flaw-draws-in.html"
+    },
+    {
+      "category": "autres_outils",
+      "product": "JFrog Artifactory",
+      "criticality": "critique",
+      "impact": "Des pirates ont créé des comptes administrateur cachés via une faille JFrog Artifactory.",
+      "technical_detail": "Chaîne CVE-2026-42016/42018/82329, exploitée du 15 août au 8 sept., ajoutée au CISA KEV le 12 sept. 2026.",
+      "source": "The Hacker News (Wiz)",
+      "date": "2026-09-12",
+      "url": "https://thehackernews.com/2026/09/cisa-adds-5-actively-exploited.html"
+    },
+    {
+      "category": "autres_outils",
+      "product": "Adobe Commerce / Magento",
+      "criticality": "critique",
+      "impact": "Un site Adobe Commerce/Magento peut être piraté via une faille déjà exploitée pour y déposer un logiciel malveillant.",
+      "technical_detail": "« StyleSmuggler », CVE-2026-75650, CVSS 10.0, backdoor Rust + webshell PHP.",
+      "source": "The Hacker News",
+      "date": "2026-09-08",
+      "url": "https://thehackernews.com/2026/09/adobe-patches-magento-zero-day.html"
+    },
+    {
+      "category": "gestion_parc",
+      "product": "N-able N-central",
+      "criticality": "critique",
+      "impact": "Une faille critique dans l'outil de gestion de parc N-able N-central est exploitée à distance sans identifiants — pertinent par analogie pour NinjaOne.",
+      "technical_detail": "CVE-2026-86218, CVSS 10.0, RCE pré-authentification.",
+      "source": "The Hacker News",
+      "date": "2026-09-08",
+      "url": "https://thehackernews.com/2026/09/n-able-n-central-pre-auth-rce-flaw.html"
+    },
+    {
+      "category": "autres_outils",
+      "product": "Google Chrome (V8)",
+      "criticality": "critique",
+      "impact": "Premier zero-day Chrome (V8) du mois, déjà corrigé début septembre — à vérifier que les postes sont bien à jour.",
+      "technical_detail": "CVE-2026-85046, CVSS 8.8. Corrigé en 152.0.7977.82/.83.",
+      "source": "Bleeping Computer",
+      "date": "2026-09-04",
+      "url": "https://www.bleepingcomputer.com/news/security/google-warns-of-new-chrome-zero-day-flaw-exploited-in-attacks/"
+    },
+    {
+      "category": "reseau_securite",
+      "product": "Fortinet (suite)",
+      "criticality": "important",
+      "impact": "11 failles supplémentaires touchent plusieurs produits Fortinet — correctifs disponibles, pas d'exploitation active connue à ce jour.",
+      "technical_detail": "CVE-2026-22575, -26084, -84385 à -84393 (FortiAnalyzer, FortiClient Windows, FortiManager, FortiOS, FortiPAM, FortiProxy, FortiSandbox, FortiSIEM, FortiSOAR).",
+      "source": "CERT-FR AVI-1166",
+      "date": "2026-09-11",
+      "url": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-1166/"
+    },
+    {
+      "category": "reseau_securite",
+      "product": "Cisco Intersight / UCS / NFVIS",
+      "criticality": "important",
+      "impact": "Une faille permet de contourner une politique de sécurité sur les outils Cisco Intersight/UCS/NFVIS — non exploitée activement.",
+      "technical_detail": "CVE-2026-20293.",
+      "source": "CERT-FR AVI-1138",
+      "date": "2026-09-09",
+      "url": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-1138/"
+    }
+  ]
+}
