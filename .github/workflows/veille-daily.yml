@@ -6,7 +6,7 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -33,7 +33,7 @@ jobs:
       - name: Installer les dépendances
         run: pip install -r requirements.txt
 
-      - name: Récupérer le rapport depuis SharePoint et générer la page
+      - name: Récupérer le rapport depuis SharePoint et générer les pages
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -41,7 +41,20 @@ jobs:
           SHAREPOINT_DRIVE_ID: ${{ vars.SHAREPOINT_DRIVE_ID }}
           SHAREPOINT_FILE_NAME: ${{ vars.SHAREPOINT_FILE_NAME }}
           OUTPUT_DIR: public
+          ARCHIVE_DIR: data
         run: python fetch_and_publish.py
+
+      - name: Archiver le rapport du jour dans le dépôt
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "Rien de nouveau à archiver (data/ déjà à jour pour aujourd'hui)."
+          else
+            git commit -m "Archive veille du $(date -u +%F)"
+            git push
+          fi
 
       - name: Configurer GitHub Pages
         uses: actions/configure-pages@v5
