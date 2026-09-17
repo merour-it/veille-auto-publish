@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "date_key": "2026-09-17",
+  "page_date": "2026-09-17",
+  "items": [
+    {
+      "category": "reseau_securite",
+      "product": "pfSense / Netgate",
+      "criticality": "critique",
+      "impact": "Un attaquant disposant d'un compte LDAP/RADIUS distant (sans compte local correspondant) peut prendre le contrôle total de notre pare-feu pfSense.",
+      "technical_detail": "pfSense-SA-26_22.webgui — Contournement du contrôle de privilèges dans xmlrpc.php (fonction getUserEntry()) quand l'authentification distante LDAP/RADIUS est configurée : permet l'exécution de méthodes XML-RPC privilégiées (dont exec_php), donc l'exécution de code PHP et de commandes shell arbitraires. Affecte pfSense Plus ≤ 26.07 et pfSense CE ≤ 2.9.0. Corrigé en pfSense Plus > 26.07 et CE > 2.9.0 — patches disponibles pour 26.10, 26.03.1, 2.9.0 et 2.8.1 via System Patches. Pas de CVE attribué à ce jour. Contournement immédiat : vérifier qu'aucun compte LDAP/RADIUS distant n'est dépourvu de…",
+      "source": "Netgate (pfSense-SA-26_22.webgui)",
+      "date": "15/09/2026",
+      "url": "https://docs.netgate.com/downloads/pfSense-SA-26_22.webgui.asc"
+    },
+    {
+      "category": "systemes",
+      "product": "Windows Server 2019/2022/2025, Windows 10/11",
+      "criticality": "critique",
+      "impact": "Les mises à jour de sécurité de septembre ont cassé l'accès Bureau à distance sur les serveurs Windows Server — un correctif d'urgence est à appliquer.",
+      "technical_detail": "Les mises à jour de sécurité de septembre 2026 (KB5122871 pour Windows Server 2025, KB5122882 pour Windows Server 2022) ont provoqué des échecs de connexion RDP/RDS et rendu des serveurs indisponibles (MMC, Explorateur de fichiers, Windows Update également touchés). Microsoft a publié des correctifs hors cycle le 14/09/2026 : KB5129238 (Server 2019), KB5129237 (Server 2022, build 20348.5631), KB5129235 (Server 2025), ainsi que KB5129236 (Windows 10 21H2/22H2), KB5129195 (Windows 11 24H2/25H2) et KB5129194 (Windows 11 26H1) côté postes clients. Corrige aussi des problèmes Hyper-V (partage de d…",
+      "source": "Microsoft / BleepingComputer",
+      "date": "14/09/2026",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-emergency-windows-updates-to-fix-rds-failures/"
+    },
+    {
+      "category": "systemes",
+      "product": "Windows 11 24H2/25H2",
+      "criticality": "important",
+      "impact": "Sur certains PC Windows 11, une mise à jour peut faire perdre la connexion sécurisée au domaine de l'entreprise et bloquer les connexions utilisateurs — Microsoft n'a pas encore publié de correctif officiel.",
+      "technical_detail": "Après installation de KB5124008 (Windows 11 24H2/25H2, builds 26100.9445/26200.9445, publié le 08/09/2026), certains postes perdent leur canal sécurisé avec l'Active Directory : erreurs « nom d'utilisateur ou mot de passe incorrect » malgré des identifiants valides, Test-ComputerSecureChannel renvoie False, nltest /sc_query renvoie ERROR_NO_TRUST_LSA_SECRET. Cause probable : la fonctionnalité Machine Identity Isolation (Credential Guard) passe en mode application stricte. Contournement non officiel : régler HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\MachineIdentityIsolation=0, puis réparer le…",
+      "source": "BleepingComputer / CyberSecurityNews",
+      "date": "16/09/2026",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/windows-11-kb5124008-update-breaks-domain-trust-for-some-users/"
+    },
+    {
+      "category": "systemes",
+      "product": "macOS / iOS / iPadOS",
+      "criticality": "important",
+      "impact": "Apple a publié de nouvelles versions majeures (iOS 27, iPadOS 27, macOS 27) et des mises à jour de sécurité pour les anciennes versions, corrigeant un grand nombre de failles sur tous ses appareils.",
+      "technical_detail": "CERTFR-2026-AVI-1172 (15/09/2026) : avis consolidé couvrant iOS/iPadOS (< 26.7 et < 27), macOS Golden Gate/Sequoia/Tahoe, Safari, tvOS, visionOS, watchOS et Xcode (< 27) — risques d'exécution de code à distance, élévation de privilèges, déni de service et atteinte à la confidentialité. Aucune exploitation active mentionnée dans l'avis. ⚠️ Volume exact de CVE non garanti depuis la source consultée — se référer aux bulletins Apple officiels pour le détail par produit.",
+      "source": "CERT-FR",
+      "date": "15/09/2026",
+      "url": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-1172/"
+    },
+    {
+      "category": "systemes",
+      "product": "Windows 11 26H1",
+      "criticality": "info",
+      "impact": "Une faille Windows 11 (version 26H1) pourrait permettre à un utilisateur du poste d'obtenir plus de droits que prévu — correctif disponible via la mise à jour normale.",
+      "technical_detail": "CVE-2026-85921 — élévation de privilèges, Windows 11 version 26H1 (x64 et ARM64), versions antérieures à 10.0.28000.2956. Aucune exploitation active signalée par CERT-FR. Correctif via le cycle normal de mises à jour Windows.",
+      "source": "CERT-FR",
+      "date": "15/09/2026",
+      "url": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-1174/"
+    },
+    {
+      "category": "systemes",
+      "product": "Windows Server 2022",
+      "criticality": "info",
+      "impact": "Windows Server 2022 entre en support étendu le mois prochain — les mises à jour de fonctionnalités s'arrêtent, la sécurité continue jusqu'en 2031.",
+      "technical_detail": "Windows Server 2022 atteint la fin du support courant (mainstream support) en octobre 2026 et entre en support étendu jusqu'en octobre 2031 (mises à jour de sécurité uniquement, plus de nouvelles fonctionnalités ni support technique standard sans contrat étendu).",
+      "source": "BleepingComputer",
+      "date": "16/09/2026",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/"
+    }
+  ]
+}
