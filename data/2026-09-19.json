@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "date_key": "2026-09-19",
+  "page_date": "2026-09-18",
+  "items": [
+    {
+      "category": "systemes",
+      "product": "Windows 11 24H2/25H2/26H1",
+      "criticality": "important",
+      "impact": "Microsoft confirme officiellement qu'une mise à jour peut couper certains postes du réseau de l'entreprise (identifiants refusés) — et donne une marche à suivre, mais toujours pas de vrai correctif",
+      "technical_detail": "Bug remontant à KB5124008 (builds 26100.9445 / 26200.9445) : nouveauté confirmée aujourd'hui — Windows 11 26H1 est également concerné via KB5124012, en plus des 24H2/25H2 déjà signalés le 16/09. Cause : application stricte de la fonctionnalité Machine Identity Isolation (Credential Guard), qui casse le canal sécurisé (secure channel) avec l'Active Directory. Microsoft confirme le problème et publie une mitigation officielle (jusqu'ici seulement un contournement communautaire non officiel) : désactiver MachineIdentityIsolation via Intune, Stratégie de groupe, ou registre (HKLM\\SYSTEM\\CurrentCo…",
+      "source": "BleepingComputer / Microsoft",
+      "date": "17 septembre 2026",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-workaround-for-windows-domain-login-authentication-issues/"
+    },
+    {
+      "category": "autres_outils",
+      "product": "AnyDesk",
+      "criticality": "info",
+      "impact": "Un bug connu d'AnyDesk peut planter le service sur un poste où un pirate a déjà réussi à exécuter du code — l'éditeur n'a pas publié de correctif à ce jour",
+      "technical_detail": "CVE-2026-15682 (GHSA-f5mf-mx82-hm83, ZDI-CAN-26645) — CVSS 4.7 (modéré). La fonction « Send Support Information » permet, via une jonction de fichiers (CWE-59, résolution de lien avant accès fichier), de créer des fichiers arbitraires et de provoquer un déni de service. Nécessite qu'un attaquant dispose déjà d'une exécution de code locale à faibles privilèges (pas d'exploitation à distance directe) ; EPSS 0,131 % — probabilité d'exploitation active jugée très faible. Divulguée le 14/07/2026 via la base d'avis GitHub ; aucune page d'avis officielle AnyDesk trouvée à ce jour pour ce CVE.",
+      "source": "GitHub Advisory Database (ZDI)",
+      "date": "14 juillet 2026",
+      "url": "https://github.com/advisories/GHSA-f5mf-mx82-hm83"
+    }
+  ]
+}
